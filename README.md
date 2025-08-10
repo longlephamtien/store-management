@@ -1,1 +1,5 @@
 # Store Management
+
+## Backend
+
+## Frontend
