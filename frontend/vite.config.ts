@@ -12,6 +12,26 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'recharts': ['recharts'],
+          'framer-motion': ['framer-motion'],
+          'lucide-react': ['lucide-react']
+        }
+      }
+    },
+    cssCodeSplit: true,
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -21,4 +41,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion', 'recharts', 'lucide-react']
+  }
 })

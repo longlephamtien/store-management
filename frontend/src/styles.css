@@ -1,15 +1,667 @@
 @import "tailwindcss";
 
+/* Custom CSS Variables for Light Wave-Inspired Glassmorphism Theme - Performance Optimized */
+:root {
+  --glass-primary: rgba(255, 255, 255, 0.25);
+  --glass-secondary: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --backdrop-blur: blur(24px);
+  --gradient-primary: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  --gradient-accent: linear-gradient(135deg, #7dd3fc 0%, #3b82f6 50%, #1e40af 100%);
+  --gradient-success: linear-gradient(135deg, #6ee7b7 0%, #10b981 50%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  --gradient-info: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 50%, #3b82f6 100%);
+  --wave-bg: radial-gradient(ellipse at top, #e0f2fe 0%, #bae6fd 25%, #7dd3fc 50%, #38bdf8 75%, #0ea5e9 100%);
+  
+  /* Sidebar width variables */
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-collapsed: 80px;
+  --sidebar-width: var(--sidebar-width-expanded);
+}
+
 body {
   @apply m-0;
+  height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--wave-bg);
+  background-attachment: fixed;
+  position: relative;
+  color: #1e293b;
+  overflow: hidden;
+  /* Performance optimizations */
+  font-display: swap;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(147, 197, 253, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(191, 219, 254, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(125, 211, 252, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(240, 249, 255, 0.8) 0%, rgba(219, 234, 254, 0.6) 100%);
+  pointer-events: none;
+  z-index: -1;
+  /* GPU acceleration */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+#app {
+  height: 100vh;
+  overflow: hidden;
+  /* Prevent layout shifts */
+  contain: layout style;
+}
+
+/* Glass Morphism Utility Classes - Optimized for performance */
+.glass-panel {
+  background: var(--glass-primary);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px var(--glass-shadow);
+  /* Add will-change for better performance */
+  will-change: transform, background-color;
+}
+
+.glass-card {
+  background: var(--glass-primary);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: 
+    0 8px 32px var(--glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+  /* Optimize for animations */
+  will-change: transform, background-color;
+  /* Prevent layout shifts */
+  contain: layout style paint;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.3s ease;
+  /* Optimize performance */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    0 12px 36px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  /* Reduced transform to minimize CLS */
+  transform: translateY(-2px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-card:hover::before {
+  left: 100%;
+}
+
+.glass-button {
+  background: var(--glass-primary);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  /* Performance optimization */
+  will-change: transform, background-color;
+  contain: layout style paint;
+}
+
+.glass-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.3s ease;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.35);
+  /* Reduced transform to minimize layout shifts */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-button:hover::before {
+  left: 100%;
+}
+
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    4px 0 32px rgba(0, 0, 0, 0.1),
+    inset -1px 0 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.8s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Custom Gradients */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-accent {
+  background: var(--gradient-accent);
+}
+
+.gradient-success {
+  background: var(--gradient-success);
+}
+
+.gradient-warning {
+  background: var(--gradient-warning);
+}
+
+.gradient-info {
+  background: var(--gradient-info);
+}
+
+/* Utility classes for stat cards - Layout stability improvements */
+.stat-value-container {
+  min-width: 0;
+  flex: 1;
+  /* Prevent layout shifts */
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Enhanced text readability for glassmorphism backgrounds */
+.glass-card h3 {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card h3:not(.no-enhance) {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.5));
+}
+
+/* Fallback for browsers that don't support background-clip: text */
+@supports not (-webkit-background-clip: text) {
+  .glass-card h3:not(.no-enhance) {
+    color: #0f172a !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* CRITICAL: Prevent layout shifts in stat cards */
+.stat-card-value {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  /* Fixed dimensions to prevent layout shifts */
+  min-width: 120px;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive stat card adjustments - Prevent layout shifts */
+@media (max-width: 768px) {
+  .stat-card-value {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+    min-height: 1.8rem !important;
+    height: 1.8rem !important;
+    min-width: 100px;
+  }
+  .stat-value-container {
+    min-height: 1.8rem !important;
+    height: 1.8rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .stat-card-value {
+    font-size: 1.25rem !important;
+    line-height: 1.1 !important;
+    min-height: 1.5rem !important;
+    height: 1.5rem !important;
+    min-width: 80px;
+  }
+  .stat-value-container {
+    min-height: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+}
+
+/* CRITICAL: Fixed dimensions for glass cards to prevent CLS */
+.glass-card {
+  /* Prevent content jumping */
+  overflow: hidden;
+  /* Ensure consistent spacing */
+  box-sizing: border-box;
+}
+
+/* Fixed height for stat cards to prevent layout shifts */
+.glass-card.stat-card {
+  height: 180px;
+  min-height: 180px;
+  max-height: 180px;
+}
+
+/* Prevent trend text from causing layout shifts */
+.trend-container {
+  min-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.trend-value {
+  flex-shrink: 0;
+  min-width: 40px;
+}
+
+.trend-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Performance optimizations for common elements */
+.glass-panel:hover,
+.glass-card:hover,
+.glass-button:hover {
+  /* Use transform3d for hardware acceleration */
+  transform: translate3d(0, -2px, 0);
+}
+
+/* Prevent repaints on hover */
+.group:hover .group-hover\\:scale-110 {
+  transform: scale(1.05); /* Reduced scale to minimize layout impact */
+}
+
+/* Critical performance optimizations */
+* {
+  /* Enable hardware acceleration for transforms */
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* Optimize chart containers for better rendering */
+.recharts-wrapper {
+  contain: layout size style;
+  will-change: auto;
+}
+
+.recharts-surface {
+  /* Prevent layout shifts during chart rendering */
+  min-height: 250px;
+  contain: layout style paint;
+}
+
+/* Ensure pie charts are visible and properly sized */
+.recharts-pie-sector {
+  opacity: 1 !important;
+}
+
+.recharts-pie {
+  outline: none;
+}
+
+.recharts-legend-wrapper {
+  padding-top: 20px !important;
+}
+
+/* Grid optimizations */
+[class*="grid-cols"] {
+  contain: layout;
+}
+
+/* Skeleton loading states for better perceived performance */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.1) 25%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Optimize text rendering */
+h1, h2, h3, h4, h5, h6 {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+/* Reduce paint events */
+.text-dark,
+.text-dark-70,
+.text-dark-80,
+.text-dark-60 {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimize images and icons */
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Critical layout stability */
+.stat-card-value {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Layout Management - Fixed Sidebar with Scrollable Content */
+.layout-container {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+  --sidebar-width: var(--sidebar-width-expanded);
+}
+
+.layout-container.sidebar-collapsed {
+  --sidebar-width: var(--sidebar-width-collapsed);
+}
+
+.sidebar-fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: var(--sidebar-width);
+  transition: width 0.3s ease-in-out;
+}
+
+.main-content-area {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  width: calc(100vw - var(--sidebar-width));
+}
+
+.content-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Hide scrollbar on webkit browsers */
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  min-height: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Responsive content adjustments */
+@media (min-width: 1280px) {
+  .content-wrapper {
+    max-width: calc(100vw - var(--sidebar-width) - 4rem);
+  }
+}
+
+@media (max-width: 1279px) {
+  .content-wrapper {
+    max-width: calc(100vw - 4rem);
+  }
+}
+
+.header-fixed {
+  flex-shrink: 0;
+  z-index: 40;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 1024px) {
+  .layout-container {
+    --sidebar-width: 0px;
+  }
+  
+  .main-content-area {
+    margin-left: 0 !important;
+    width: 100vw !important;
+  }
+  
+  .sidebar-fixed {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+  }
+  
+  .sidebar-fixed.mobile-open {
+    transform: translateX(0);
+  }
+}
+
+/* Animation performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Container query optimizations */
+@supports (contain: layout) {
+  .glass-card {
+    contain: layout style paint;
+  }
+  
+  .glass-panel {
+    contain: layout style;
+  }
+}
+
+/* Intersection observer placeholder */
+.chart-container {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-loading {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: chart-spin 1s linear infinite;
+}
+
+@keyframes chart-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced text readability - Dark text colors for better readability */
+.text-dark {
+  color: #1e293b !important;
+}
+
+.text-dark-80 {
+  color: rgba(30, 41, 59, 0.8) !important;
+}
+
+.text-dark-70 {
+  color: rgba(30, 41, 59, 0.7) !important;
+}
+
+.text-dark-60 {
+  color: rgba(30, 41, 59, 0.6) !important;
+}
+
+.text-slate-700 {
+  color: #334155 !important;
+}
+
+.text-slate-600 {
+  color: #475569 !important;
+}
+
+.text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Override white text with dark text for better readability */
+.glass-card, .glass-panel, .glass-sidebar {
+  color: #1e293b;
+}
+
+/* Button text improvements */
+.glass-button {
+  color: #334155;
+}
+
+.glass-button:hover {
+  color: #1e293b;
+}
+
+/* Placeholder text for form inputs */
+.placeholder-dark::placeholder {
+  color: rgba(30, 41, 59, 0.6) !important;
+}
+
+/* Focus states with dark text */
+.focus-dark:focus {
+  color: #1e293b !important;
 }
