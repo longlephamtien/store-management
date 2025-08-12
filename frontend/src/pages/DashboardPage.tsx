@@ -1,5 +1,6 @@
 import { motion, LazyMotion, domAnimation } from 'framer-motion';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Package,
   TrendingUp,
@@ -40,10 +41,10 @@ const revenueData = [
 ];
 
 const salesData = [
-  { name: 'Electronics', value: 35, color: '#667eea' },
-  { name: 'Clothing', value: 25, color: '#764ba2' },
-  { name: 'Books', value: 15, color: '#f093fb' },
-  { name: 'Home & Garden', value: 25, color: '#4facfe' },
+  { name: 'electronics', value: 35, color: '#667eea' },
+  { name: 'clothing', value: 25, color: '#764ba2' },
+  { name: 'books', value: 15, color: '#f093fb' },
+  { name: 'home_garden', value: 25, color: '#4facfe' },
 ];
 
 const topProducts = [
@@ -54,11 +55,11 @@ const topProducts = [
   { id: 5, name: 'AirPods Pro', sales: 78, revenue: 19500, stock: 15 },
 ];
 
-const recentTransactions = [
-  { id: 1, customer: 'John Smith', amount: 2499, product: 'MacBook Pro', status: 'completed', time: '2 hours ago' },
-  { id: 2, customer: 'Sarah Johnson', amount: 899, product: 'iPhone 15', status: 'pending', time: '4 hours ago' },
-  { id: 3, customer: 'Mike Chen', amount: 399, product: 'Apple Watch', status: 'completed', time: '6 hours ago' },
-  { id: 4, customer: 'Emily Davis', amount: 249, product: 'AirPods Pro', status: 'completed', time: '8 hours ago' },
+const recentTransactionsData = [
+  { id: 1, customer: 'John Smith', amount: 2499, productKey: 'macbook_pro', status: 'completed', timeValue: 2, timeUnit: 'hours' },
+  { id: 2, customer: 'Sarah Johnson', amount: 899, productKey: 'iphone_15', status: 'pending', timeValue: 4, timeUnit: 'hours' },
+  { id: 3, customer: 'Mike Chen', amount: 399, productKey: 'apple_watch', status: 'completed', timeValue: 6, timeUnit: 'hours' },
+  { id: 4, customer: 'Emily Davis', amount: 249, productKey: 'airpods_pro', status: 'completed', timeValue: 8, timeUnit: 'hours' },
 ];
 
 // Dashboard stats with large numbers to test display
@@ -123,7 +124,7 @@ const RevenueChart = memo(() => (
   </ResponsiveContainer>
 ));
 
-const SalesChart = memo(() => (
+const SalesChart = memo(({ t }: { t: (key: string) => string }) => (
   <ResponsiveContainer width="100%" height="100%" minHeight={250}>
     <PieChart margin={{ top: 5, right: 5, left: 5, bottom: 35 }}>
       <Pie
@@ -148,24 +149,45 @@ const SalesChart = memo(() => (
           color: '#1e293b',
           fontSize: '14px'
         }}
-        formatter={(value, name) => [`${value}%`, name]}
+        formatter={(value, name) => [
+          `${value}%`,
+          t(name as string)
+        ]}
       />
       <Legend
-        wrapperStyle={{ 
-          color: '#1e293b',
-          fontSize: '12px',
-          paddingTop: '10px'
-        }}
-        iconType="circle"
-        layout="horizontal"
-        align="center"
         verticalAlign="bottom"
+        iconType="circle"
+        formatter={(value) => t(value)}
+        wrapperStyle={{
+          fontSize: '12px',
+          color: '#1e293b'
+        }}
       />
     </PieChart>
   </ResponsiveContainer>
 ));
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
+  const formatTimeAgo = (value: number, unit: string) => {
+    if (unit === 'hours') {
+      return value === 1 ? t('hour_ago', { count: value }) : t('hours_ago', { count: value });
+    }
+    if (unit === 'days') {
+      return value === 1 ? t('day_ago', { count: value }) : t('days_ago', { count: value });
+    }
+    if (unit === 'minutes') {
+      return t('minutes_ago', { count: value });
+    }
+    return `${value} ${unit} ago`;
+  };
+
+  const recentTransactions = recentTransactionsData.map(transaction => ({
+    ...transaction,
+    product: t(transaction.productKey)
+  }));
+  
   // Reduced animation complexity for better performance
   const pageVariants = {
     hidden: { opacity: 0 },
@@ -201,17 +223,17 @@ export default function DashboardPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-dark mb-2">Dashboard</h1>
-          <p className="text-dark-70">Welcome back! Here's what's happening with your store today.</p>
+          <h1 className="text-3xl font-bold text-dark mb-2">{t('dashboard')}</h1>
+          <p className="text-dark-70">{t('welcome_back')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button className="glass-button px-4 py-2 rounded-lg text-dark-80 hover:text-dark transition-colors flex items-center space-x-2">
             <Calendar className="w-4 h-4" />
-            <span>Last 30 days</span>
+            <span>{t('last_30_days', { count: 30 })}</span>
           </button>
           <button className="glass-button px-4 py-2 rounded-lg text-dark-80 hover:text-dark transition-colors flex items-center space-x-2">
             <Download className="w-4 h-4" />
-            <span>Export</span>
+            <span>{t('export')}</span>
           </button>
         </div>
       </motion.div>
@@ -222,38 +244,38 @@ export default function DashboardPage() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <StatCard
-          title="Total Revenue"
+          title={t('total_revenue')}
           value={formatStatValue(dashboardStats.totalRevenue, '$')}
-          subtitle="this month"
+          subtitle={t('this_month')}
           icon={DollarSign}
-          trend={{ value: 12.5, label: 'vs last month', positive: true }}
+          trend={{ value: 12.5, label: t('vs_last_month'), positive: true }}
           gradient="success"
         />
         
         <StatCard
-          title="Products Sold"
+          title={t('products_sold')}
           value={formatStatValue(dashboardStats.productsSold)}
-          subtitle="items"
+          subtitle={t('items')}
           icon={Package}
-          trend={{ value: 8.3, label: 'vs last month', positive: true }}
+          trend={{ value: 8.3, label: t('vs_last_month'), positive: true }}
           gradient="info"
         />
         
         <StatCard
-          title="Total Customers"
+          title={t('total_customers')}
           value={formatStatValue(dashboardStats.totalCustomers)}
-          subtitle="active"
+          subtitle={t('active')}
           icon={Users}
-          trend={{ value: 15.2, label: 'vs last month', positive: true }}
+          trend={{ value: 15.2, label: t('vs_last_month'), positive: true }}
           gradient="primary"
         />
         
         <StatCard
-          title="Low Stock Items"
+          title={t('low_stock_items')}
           value={formatStatValue(dashboardStats.lowStockItems)}
-          subtitle="requires attention"
+          subtitle={t('requires_attention')}
           icon={AlertTriangle}
-          trend={{ value: -5.1, label: 'vs last month', positive: false }}
+          trend={{ value: -5.1, label: t('vs_last_month'), positive: false }}
           gradient="warning"
         />
       </motion.div>
@@ -262,16 +284,16 @@ export default function DashboardPage() {
       <motion.div variants={itemVariants} className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Revenue Chart */}
         <ChartCard 
-          title="Revenue & Profit"
-          action={{ label: 'View Details', onClick: () => console.log('View details') }}
+          title={t('revenue_profit')}
+          action={{ label: t('view_details'), onClick: () => console.log('View details') }}
           height="h-72 sm:h-80"
         >
           <RevenueChart />
         </ChartCard>
 
         {/* Sales Distribution */}
-        <ChartCard title="Sales by Category" height="h-72 sm:h-80">
-          <SalesChart />
+        <ChartCard title={t('sales_by_category')} height="h-72 sm:h-80">
+          <SalesChart t={t} />
         </ChartCard>
       </motion.div>
 
@@ -284,12 +306,12 @@ export default function DashboardPage() {
             transition={{ delay: 0.4 }}
           >
             <InfoCard
-              title="Top Selling Products"
-              description="Best performing products this month"
+              title={t('top_selling_products')}
+              description={t('best_performing_products')}
               headerAction={
                 <button className="glass-button px-3 py-1 rounded-lg text-dark-80 hover:text-dark text-sm transition-colors flex items-center space-x-1">
                   <BarChart3 className="w-4 h-4" />
-                  <span>View All</span>
+                  <span>{t('view_all')}</span>
                 </button>
               }
             >
@@ -308,13 +330,13 @@ export default function DashboardPage() {
                       </div>
                       <div>
                         <p className="text-dark font-medium">{product.name}</p>
-                        <p className="text-dark-60 text-sm">{product.sales} sold</p>
+                        <p className="text-dark-60 text-sm">{product.sales} {t('sold')}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-dark font-semibold">${product.revenue.toLocaleString()}</p>
                       <p className={`text-sm ${product.stock <= 5 ? 'text-red-500' : 'text-dark-60'}`}>
-                        {product.stock} in stock
+                        {product.stock} {t('in_stock_lowercase')}
                       </p>
                     </div>
                   </motion.div>
@@ -330,12 +352,12 @@ export default function DashboardPage() {
             transition={{ delay: 0.5 }}
           >
             <InfoCard
-              title="Recent Transactions"
-              description="Latest customer purchases"
+              title={t('recent_transactions')}
+              description={t('latest_customer_activity')}
               headerAction={
                 <button className="glass-button px-3 py-1 rounded-lg text-dark-80 hover:text-dark text-sm transition-colors flex items-center space-x-1">
                   <Eye className="w-4 h-4" />
-                  <span>View All</span>
+                  <span>{t('see_all')}</span>
                 </button>
               }
             >
@@ -363,7 +385,7 @@ export default function DashboardPage() {
                         <span className={`w-2 h-2 rounded-full ${
                           transaction.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
                         }`}></span>
-                        <p className="text-dark-60 text-sm">{transaction.time}</p>
+                        <p className="text-dark-60 text-sm">{formatTimeAgo(transaction.timeValue, transaction.timeUnit)}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -380,13 +402,13 @@ export default function DashboardPage() {
           transition={{ delay: 0.6 }}
         >
           <GlassCard>
-            <h3 className="text-xl font-semibold text-dark mb-4">Quick Actions</h3>
+            <h3 className="text-xl font-semibold text-dark mb-4">{t('quick_actions')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: Plus, label: 'Add Product', color: 'gradient-success' },
-                { icon: ShoppingCart, label: 'New Sale', color: 'gradient-info' },
-                { icon: TrendingUp, label: 'Stock In', color: 'gradient-accent' },
-                { icon: Filter, label: 'Generate Report', color: 'gradient-warning' },
+                { icon: Plus, label: t('add_product'), color: 'gradient-success' },
+                { icon: ShoppingCart, label: t('new_sale'), color: 'gradient-info' },
+                { icon: TrendingUp, label: t('stock_in'), color: 'gradient-accent' },
+                { icon: Filter, label: t('generate_report'), color: 'gradient-warning' },
               ].map((action, index) => (
                 <motion.button
                   key={index}

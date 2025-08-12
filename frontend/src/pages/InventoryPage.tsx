@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
   Package,
@@ -22,7 +23,7 @@ import { clsx } from 'clsx';
 
 interface Product {
   id: number;
-  name: string;
+  nameKey: string; // Changed from name to nameKey for translation
   sku: string;
   category: string;
   price: number;
@@ -30,7 +31,8 @@ interface Product {
   lowStockThreshold: number;
   status: 'in-stock' | 'low-stock' | 'out-of-stock';
   image?: string;
-  lastUpdated: string;
+  lastUpdatedValue: number;
+  lastUpdatedUnit: string;
   supplier: string;
   rating: number;
   sales: number;
@@ -39,70 +41,75 @@ interface Product {
 const mockProducts: Product[] = [
   {
     id: 1,
-    name: 'iPhone 15 Pro',
+    nameKey: 'iphone_15_pro',
     sku: 'IPH15P-128',
     category: 'Electronics',
     price: 999,
     stock: 12,
     lowStockThreshold: 10,
     status: 'low-stock',
-    lastUpdated: '2 hours ago',
+    lastUpdatedValue: 2,
+    lastUpdatedUnit: 'hours',
     supplier: 'Apple Inc.',
     rating: 4.8,
     sales: 89
   },
   {
     id: 2,
-    name: 'MacBook Pro 14"',
+    nameKey: 'macbook_pro_14',
     sku: 'MBP14-512',
     category: 'Electronics',
     price: 2499,
     stock: 8,
     lowStockThreshold: 5,
     status: 'in-stock',
-    lastUpdated: '4 hours ago',
+    lastUpdatedValue: 4,
+    lastUpdatedUnit: 'hours',
     supplier: 'Apple Inc.',
     rating: 4.9,
     sales: 45
   },
   {
     id: 3,
-    name: 'iPad Air',
+    nameKey: 'ipad_air',
     sku: 'IPAD-AIR-64',
     category: 'Electronics',
     price: 599,
     stock: 0,
     lowStockThreshold: 15,
     status: 'out-of-stock',
-    lastUpdated: '1 day ago',
+    lastUpdatedValue: 1,
+    lastUpdatedUnit: 'days',
     supplier: 'Apple Inc.',
     rating: 4.7,
     sales: 67
   },
   {
     id: 4,
-    name: 'Apple Watch Series 9',
+    nameKey: 'apple_watch_series_9',
     sku: 'AWS9-45MM',
     category: 'Electronics',
     price: 399,
     stock: 25,
     lowStockThreshold: 20,
     status: 'in-stock',
-    lastUpdated: '6 hours ago',
+    lastUpdatedValue: 6,
+    lastUpdatedUnit: 'hours',
     supplier: 'Apple Inc.',
     rating: 4.6,
     sales: 134
   },
   {
     id: 5,
-    name: 'AirPods Pro',
+    nameKey: 'airpods_pro',
     sku: 'APP-GEN2',
     category: 'Audio',
     price: 249,
     stock: 3,
     lowStockThreshold: 10,
     status: 'low-stock',
-    lastUpdated: '3 hours ago',
+    lastUpdatedValue: 3,
+    lastUpdatedUnit: 'hours',
     supplier: 'Apple Inc.',
     rating: 4.8,
     sales: 78
@@ -110,16 +117,69 @@ const mockProducts: Product[] = [
 ];
 
 export default function InventoryPage() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const formatTimeAgo = (value: number, unit: string) => {
+    if (unit === 'hours') {
+      return value === 1 ? t('hour_ago', { count: value }) : t('hours_ago', { count: value });
+    }
+    if (unit === 'days') {
+      return value === 1 ? t('day_ago', { count: value }) : t('days_ago', { count: value });
+    }
+    if (unit === 'minutes') {
+      return t('minutes_ago', { count: value });
+    }
+    return `${value} ${unit} ago`;
+  };
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
   const categories = ['all', 'Electronics', 'Audio', 'Accessories'];
   const statuses = ['all', 'in-stock', 'low-stock', 'out-of-stock'];
 
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'all': return t('all_categories');
+      case 'Electronics': return t('electronics');
+      case 'Audio': return t('audio');
+      case 'Accessories': return t('accessories');
+      default: return category;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'all': return t('all_statuses');
+      case 'in-stock': return t('low_stock_status');
+      case 'low-stock': return t('low_stock_status');
+      case 'out-of-stock': return t('out_of_stock_status');
+      default: return status;
+    }
+  };
+
+  const getStatusDisplayLabel = (status: string) => {
+    switch (status) {
+      case 'in-stock': return t('in_stock_display');
+      case 'low-stock': return t('low_stock_display');
+      case 'out-of-stock': return t('out_of_stock_display');
+      default: return status.replace('-', ' ').toUpperCase();
+    }
+  };
+
+  const getCategoryDisplayLabel = (category: string) => {
+    switch (category) {
+      case 'Electronics': return t('electronics');
+      case 'Audio': return t('audio');
+      case 'Accessories': return t('accessories');
+      default: return category;
+    }
+  };
+
   const filteredProducts = mockProducts.filter(product => {
+    const productName = t(product.nameKey);
     return (
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      productName.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (selectedCategory === 'all' || product.category === selectedCategory) &&
       (selectedStatus === 'all' || product.status === selectedStatus)
     );
@@ -159,21 +219,21 @@ export default function InventoryPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-dark mb-2">Inventory Management</h1>
-          <p className="text-dark-70">Manage your products, track stock levels, and monitor inventory performance.</p>
+          <h1 className="text-3xl font-bold text-dark mb-2">{t('inventory_management')}</h1>
+          <p className="text-dark-70">{t('manage_products_desc')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button className="glass-button px-4 py-2 rounded-lg text-dark-80 hover:text-dark transition-colors flex items-center space-x-2">
             <Upload className="w-4 h-4" />
-            <span>Import</span>
+            <span>{t('import')}</span>
           </button>
           <button className="glass-button px-4 py-2 rounded-lg text-dark-80 hover:text-dark transition-colors flex items-center space-x-2">
             <Download className="w-4 h-4" />
-            <span>Export</span>
+            <span>{t('export')}</span>
           </button>
           <button className="bg-gradient-accent px-4 py-2 rounded-lg text-white hover:shadow-lg transition-all flex items-center space-x-2">
             <Plus className="w-4 h-4" />
-            <span>Add Product</span>
+            <span>{t('add_product')}</span>
           </button>
         </div>
       </motion.div>
@@ -186,30 +246,30 @@ export default function InventoryPage() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <StatCard
-          title="Total Products"
+          title={t('total_products')}
           value={stats.totalProducts}
-          subtitle="products"
+          subtitle={t('products')}
           icon={Package}
           gradient="primary"
         />
         <StatCard
-          title="Low Stock"
+          title={t('low_stock')}
           value={stats.lowStock}
-          subtitle="needs attention"
+          subtitle={t('needs_attention')}
           icon={AlertTriangle}
           gradient="warning"
         />
         <StatCard
-          title="Out of Stock"
+          title={t('out_of_stock')}
           value={stats.outOfStock}
-          subtitle="items"
+          subtitle={t('items')}
           icon={TrendingDown}
           gradient="warning"
         />
         <StatCard
-          title="Total Value"
+          title={t('total_value')}
           value={`$${stats.totalValue.toLocaleString()}`}
-          subtitle="inventory value"
+          subtitle={t('inventory_value')}
           icon={BarChart3}
           gradient="success"
         />
@@ -228,7 +288,7 @@ export default function InventoryPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-dark-60" />
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder={t('search_products')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 glass-panel rounded-lg text-dark placeholder-dark focus-dark border-0 focus:outline-none focus:ring-2 focus:ring-slate-600/30"
@@ -246,7 +306,7 @@ export default function InventoryPage() {
                 >
                   {categories.map(category => (
                     <option key={category} value={category} className="bg-gray-800">
-                      {category === 'all' ? 'All Categories' : category}
+                      {getCategoryLabel(category)}
                     </option>
                   ))}
                 </select>
@@ -261,7 +321,7 @@ export default function InventoryPage() {
                 >
                   {statuses.map(status => (
                     <option key={status} value={status} className="bg-gray-800">
-                      {status === 'all' ? 'All Status' : status.replace('-', ' ').toUpperCase()}
+                      {getStatusLabel(status)}
                     </option>
                   ))}
                 </select>
@@ -277,19 +337,19 @@ export default function InventoryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <InfoCard title="Products" description={`${filteredProducts.length} products found`}>
+        <InfoCard title={t('products')} description={`${filteredProducts.length} ${t('products').toLowerCase()} found`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-dark/20">
-                  <th className="text-left py-3 text-dark-80 font-medium">Product</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">SKU</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Category</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Price</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Stock</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Status</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Rating</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Actions</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('name')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('sku')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('category')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('price')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('stock')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('status')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('rating')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,8 +367,8 @@ export default function InventoryPage() {
                           <Package className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <p className="text-dark font-medium">{product.name}</p>
-                          <p className="text-dark-60 text-sm">Updated {product.lastUpdated}</p>
+                          <p className="text-dark font-medium">{t(product.nameKey)}</p>
+                          <p className="text-dark-60 text-sm">{t('updated')} {formatTimeAgo(product.lastUpdatedValue, product.lastUpdatedUnit)}</p>
                         </div>
                       </div>
                     </td>
@@ -317,7 +377,7 @@ export default function InventoryPage() {
                     </td>
                     <td className="py-4">
                       <span className="glass-panel px-2 py-1 rounded text-dark-80 text-sm">
-                        {product.category}
+                        {getCategoryDisplayLabel(product.category)}
                       </span>
                     </td>
                     <td className="py-4">
@@ -337,7 +397,7 @@ export default function InventoryPage() {
                         getStatusBg(product.status),
                         getStatusColor(product.status)
                       )}>
-                        {product.status.replace('-', ' ').toUpperCase()}
+                        {getStatusDisplayLabel(product.status)}
                       </span>
                     </td>
                                         <td className="py-4">

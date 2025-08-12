@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
   Calendar,
@@ -13,9 +14,6 @@ import {
   TrendingUp,
   TrendingDown,
   Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
   FileText,
   Plus
 } from 'lucide-react';
@@ -114,32 +112,33 @@ const mockTransactions: Transaction[] = [
 ];
 
 export default function TransactionsPage() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [dateRange, setDateRange] = useState('7d');
 
   const transactionTypes = [
-    { value: 'all', label: 'All Types' },
-    { value: 'sale', label: 'Sales' },
-    { value: 'purchase', label: 'Purchases' },
-    { value: 'refund', label: 'Refunds' },
-    { value: 'payment', label: 'Payments' },
+    { value: 'all', label: t('all_types') },
+    { value: 'sale', label: t('sales') },
+    { value: 'purchase', label: t('purchases') },
+    { value: 'refund', label: t('refunds') },
+    { value: 'payment', label: t('payments') },
   ];
 
   const statuses = [
-    { value: 'all', label: 'All Status' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'failed', label: 'Failed' },
-    { value: 'cancelled', label: 'Cancelled' },
+    { value: 'all', label: t('all_statuses') },
+    { value: 'completed', label: t('completed') },
+    { value: 'pending', label: t('pending') },
+    { value: 'failed', label: t('failed') },
+    { value: 'cancelled', label: t('cancelled') },
   ];
 
   const dateRanges = [
-    { value: '7d', label: 'Last 7 days' },
-    { value: '30d', label: 'Last 30 days' },
-    { value: '90d', label: 'Last 3 months' },
-    { value: 'year', label: 'This year' },
+    { value: '7d', label: t('last_days', { count: 7 }) },
+    { value: '30d', label: t('last_30_days', { count: 30 }) },
+    { value: '90d', label: t('last_months', { count: 3 }) },
+    { value: 'year', label: t('this_year') },
   ];
 
   const filteredTransactions = mockTransactions.filter(transaction => {
@@ -153,12 +152,42 @@ export default function TransactionsPage() {
     return matchesSearch && matchesType && matchesStatus;
   });
 
+  const getPaymentMethodLabel = (method: string) => {
+    switch (method) {
+      case 'cash': return t('cash');
+      case 'card': return t('card');
+      case 'bank-transfer': return t('bank_transfer');
+      case 'digital-wallet': return t('digital_wallet');
+      default: return method.replace('-', ' ');
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'sale': return t('sale');
+      case 'purchase': return t('purchase');
+      case 'refund': return t('refund');
+      case 'payment': return t('payment');
+      default: return type;
+    }
+  };
+
+  const getStatusDisplayLabel = (status: string) => {
+    switch (status) {
+      case 'completed': return t('completed_status');
+      case 'pending': return t('pending_status');
+      case 'failed': return t('failed_status');
+      case 'cancelled': return t('cancelled_status');
+      default: return status.toUpperCase();
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'text-green-400';
-      case 'pending': return 'text-yellow-400';
-      case 'failed': return 'text-red-400';
-      case 'cancelled': return 'text-gray-400';
+      case 'completed': return 'text-green-800';
+      case 'pending': return 'text-yellow-800';
+      case 'failed': return 'text-red-800';
+      case 'cancelled': return 'text-gray-800';
       default: return 'text-dark-60';
     }
   };
@@ -170,16 +199,6 @@ export default function TransactionsPage() {
       case 'failed': return 'bg-red-400/20';
       case 'cancelled': return 'bg-gray-400/20';
       default: return 'bg-white/10';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return CheckCircle;
-      case 'pending': return Clock;
-      case 'failed': return XCircle;
-      case 'cancelled': return AlertCircle;
-      default: return Clock;
     }
   };
 
@@ -215,18 +234,18 @@ export default function TransactionsPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-dark mb-2">Financial Transactions</h1>
-          <p className="text-dark-70">Track all financial activities including sales, purchases, and payments.</p>
+          <h1 className="text-3xl font-bold text-dark mb-2">{t('financial_transactions')}</h1>
+          <p className="text-dark-70">{t('track_financial_activities')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <GlassButton variant="secondary" icon={Download}>
-            Export
+            {t('export')}
           </GlassButton>
           <GlassButton variant="secondary" icon={Upload}>
-            Import
+            {t('import')}
           </GlassButton>
           <GlassButton variant="primary" icon={Plus}>
-            New Transaction
+            {t('new_transaction')}
           </GlassButton>
         </div>
       </motion.div>
@@ -239,34 +258,34 @@ export default function TransactionsPage() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <StatCard
-          title="Total Sales"
+          title={t('total_sales')}
           value={`$${stats.totalSales.toLocaleString()}`}
-          subtitle="this month"
+          subtitle={t('this_month')}
           icon={TrendingUp}
-          trend={{ value: 15.3, label: 'vs last month', positive: true }}
+          trend={{ value: 15.3, label: t('vs_last_month'), positive: true }}
           gradient="success"
         />
         <StatCard
-          title="Total Purchases"
+          title={t('total_purchases')}
           value={`$${stats.totalPurchases.toLocaleString()}`}
-          subtitle="this month"
+          subtitle={t('this_month')}
           icon={ShoppingCart}
-          trend={{ value: 8.1, label: 'vs last month', positive: true }}
+          trend={{ value: 8.1, label: t('vs_last_month'), positive: true }}
           gradient="info"
         />
         <StatCard
-          title="Pending Transactions"
+          title={t('pending_transactions')}
           value={stats.pendingTransactions}
-          subtitle="requires attention"
+          subtitle={t('requires_attention')}
           icon={Clock}
           gradient="warning"
         />
         <StatCard
-          title="Total Refunds"
+          title={t('total_refunds')}
           value={`$${stats.totalRefunds.toLocaleString()}`}
-          subtitle="this month"
+          subtitle={t('this_month')}
           icon={TrendingDown}
-          trend={{ value: -12.5, label: 'vs last month', positive: false }}
+          trend={{ value: -12.5, label: t('vs_last_month'), positive: false }}
           gradient="warning"
         />
       </motion.div>
@@ -284,7 +303,7 @@ export default function TransactionsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-dark-60" />
               <input
                 type="text"
-                placeholder="Search transactions..."
+                placeholder={t('search_transactions')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 glass-panel rounded-lg text-dark placeholder-dark focus-dark border-0 focus:outline-none focus:ring-2 focus:ring-slate-600/30"
@@ -343,27 +362,26 @@ export default function TransactionsPage() {
         transition={{ delay: 0.3 }}
       >
         <InfoCard
-          title="Transactions"
-          description={`${filteredTransactions.length} transactions found`}
+          title={t('transactions')}
+          description={`${filteredTransactions.length} ${t('transactions')} ${t('found')}`}
         >
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-dark/20">
-                  <th className="text-left py-3 text-dark-80 font-medium">Reference</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Type</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Customer/Supplier</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Amount</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Payment</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Status</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Date</th>
-                  <th className="text-left py-3 text-dark-80 font-medium">Actions</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('reference')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('type')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('customer_supplier')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('amount')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('payment_method')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('status')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('date')}</th>
+                  <th className="text-left py-3 text-dark-80 font-medium">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTransactions.map((transaction, index) => {
                   const TypeIcon = getTypeIcon(transaction.type);
-                  const StatusIcon = getStatusIcon(transaction.status);
                   
                   return (
                     <motion.tr
@@ -388,7 +406,7 @@ export default function TransactionsPage() {
                         <div className="flex items-center space-x-2">
                           <TypeIcon className="w-4 h-4 text-dark-60" />
                           <span className="glass-panel px-2 py-1 rounded text-dark-80 text-sm capitalize">
-                            {transaction.type}
+                            {getTypeLabel(transaction.type)}
                           </span>
                         </div>
                       </td>
@@ -415,21 +433,18 @@ export default function TransactionsPage() {
                         <div className="flex items-center space-x-2">
                           <CreditCard className="w-4 h-4 text-dark-60" />
                           <span className="text-dark-80 text-sm capitalize">
-                            {transaction.paymentMethod.replace('-', ' ')}
+                            {getPaymentMethodLabel(transaction.paymentMethod)}
                           </span>
                         </div>
                       </td>
                       <td className="py-4">
-                        <div className="flex items-center space-x-2">
-                          <StatusIcon className={clsx('w-4 h-4', getStatusColor(transaction.status))} />
-                          <span className={clsx(
-                            'px-2 py-1 rounded-full text-xs font-medium capitalize',
-                            getStatusBg(transaction.status),
-                            getStatusColor(transaction.status)
-                          )}>
-                            {transaction.status}
-                          </span>
-                        </div>
+                        <span className={clsx(
+                          'px-2 py-1 rounded-full text-xs font-medium',
+                          getStatusBg(transaction.status),
+                          getStatusColor(transaction.status)
+                        )}>
+                          {getStatusDisplayLabel(transaction.status)}
+                        </span>
                       </td>
                       <td className="py-4">
                         <span className="text-dark-80 text-sm">
