@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Package,
@@ -22,13 +23,13 @@ import { clsx } from 'clsx';
 
 interface SidebarItem {
   id: string;
-  label: string;
+  labelKey: string; // Changed from label to labelKey
   icon: React.ElementType;
   path: string;
   badge?: number;
   submenu?: Array<{
     id: string;
-    label: string;
+    labelKey: string; // Changed from label to labelKey
     path: string;
     icon?: React.ElementType;
   }>;
@@ -37,60 +38,60 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    labelKey: 'dashboard',
     icon: Home,
     path: '/',
   },
   {
     id: 'inventory',
-    label: 'Inventory',
+    labelKey: 'inventory',
     icon: Package,
     path: '/inventory',
     badge: 12,
     submenu: [
-      { id: 'products', label: 'Products', path: '/inventory/products', icon: Package },
-      { id: 'categories', label: 'Categories', path: '/inventory/categories', icon: FileText },
-      { id: 'stock-in', label: 'Stock In', path: '/inventory/stock-in', icon: TrendingUp },
-      { id: 'stock-out', label: 'Stock Out', path: '/inventory/stock-out', icon: ShoppingCart },
+      { id: 'products', labelKey: 'products', path: '/inventory/products', icon: Package },
+      { id: 'categories', labelKey: 'categories', path: '/inventory/categories', icon: FileText },
+      { id: 'stock-in', labelKey: 'stock_in', path: '/inventory/stock-in', icon: TrendingUp },
+      { id: 'stock-out', labelKey: 'stock_out', path: '/inventory/stock-out', icon: ShoppingCart },
     ],
   },
   {
     id: 'transactions',
-    label: 'Transactions',
+    labelKey: 'transactions',
     icon: DollarSign,
     path: '/transactions',
     submenu: [
-      { id: 'sales', label: 'Sales', path: '/transactions/sales', icon: DollarSign },
-      { id: 'purchases', label: 'Purchases', path: '/transactions/purchases', icon: ShoppingCart },
-      { id: 'payments', label: 'Payments', path: '/transactions/payments', icon: FileText },
+      { id: 'sales', labelKey: 'sales', path: '/transactions/sales', icon: DollarSign },
+      { id: 'purchases', labelKey: 'purchases', path: '/transactions/purchases', icon: ShoppingCart },
+      { id: 'payments', labelKey: 'payments', path: '/transactions/payments', icon: FileText },
     ],
   },
   {
     id: 'analytics',
-    label: 'Analytics',
+    labelKey: 'analytics',
     icon: BarChart3,
     path: '/analytics',
     submenu: [
-      { id: 'revenue', label: 'Revenue', path: '/analytics/revenue', icon: PieChart },
-      { id: 'performance', label: 'Performance', path: '/analytics/performance', icon: TrendingUp },
-      { id: 'reports', label: 'Reports', path: '/analytics/reports', icon: FileText },
+      { id: 'revenue', labelKey: 'revenue', path: '/analytics/revenue', icon: PieChart },
+      { id: 'performance', labelKey: 'performance', path: '/analytics/performance', icon: TrendingUp },
+      { id: 'reports', labelKey: 'reports', path: '/analytics/reports', icon: FileText },
     ],
   },
   {
     id: 'customers',
-    label: 'Customers',
+    labelKey: 'customers',
     icon: Users,
     path: '/customers',
   },
   {
     id: 'calendar',
-    label: 'Calendar',
+    labelKey: 'calendar',
     icon: Calendar,
     path: '/calendar',
   },
   {
     id: 'settings',
-    label: 'Settings',
+    labelKey: 'settings',
     icon: Settings,
     path: '/settings',
   },
@@ -102,6 +103,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
+  const { t } = useTranslation();
   const [expandedItems, setExpandedItems] = useState<string[]>(['inventory']);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
@@ -145,7 +147,7 @@ export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps)
               <div className="w-8 h-8 bg-gradient-accent rounded-lg flex items-center justify-center">
                 <Package className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-slate-800">StoreManager</h1>
+              <h1 className="text-xl font-bold text-slate-800">{t('store_manager')}</h1>
             </motion.div>
           )}
         </AnimatePresence>
@@ -165,7 +167,7 @@ export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps)
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('search')}
               className="w-full pl-10 pr-4 py-2 glass-panel rounded-lg text-slate-700 placeholder-slate-500 border-0 focus:outline-none focus:ring-2 focus:ring-blue-300/50"
             />
           </div>
@@ -203,7 +205,7 @@ export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps)
                           transition={{ duration: 0.2 }}
                           className="font-medium"
                         >
-                          {item.label}
+                          {t(item.labelKey)}
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -250,7 +252,7 @@ export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps)
                             )}
                           >
                             {subItem.icon && <subItem.icon className="w-4 h-4" />}
-                            <span className="text-sm">{subItem.label}</span>
+                            <span className="text-sm">{t(subItem.labelKey)}</span>
                           </Link>
                         </li>
                       ))}
@@ -271,8 +273,8 @@ export default function Sidebar({ isCollapsed = false, onToggle }: SidebarProps)
               <span className="text-white font-semibold">JD</span>
             </div>
             <div className="flex-1">
-              <p className="text-slate-800 font-medium">John Doe</p>
-              <p className="text-slate-600 text-sm">Store Manager</p>
+              <p className="text-slate-800 font-medium">{t('john_doe')}</p>
+              <p className="text-slate-600 text-sm">{t('store_manager_role')}</p>
             </div>
             <Bell className="w-5 h-5 text-slate-600" />
           </div>

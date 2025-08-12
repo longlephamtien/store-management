@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
   TrendingUp,
@@ -51,39 +52,40 @@ const revenueData = [
   { month: 'Aug', revenue: 69000, profit: 22500, orders: 323, customers: 245 },
 ];
 
-const categoryData = [
-  { name: 'Electronics', value: 45, revenue: 320000, color: '#3b82f6' },
-  { name: 'Clothing', value: 25, revenue: 180000, color: '#0ea5e9' },
-  { name: 'Home & Garden', value: 20, revenue: 140000, color: '#06b6d4' },
-  { name: 'Books', value: 10, revenue: 70000, color: '#8b5cf6' },
-];
-
-const dailyData = [
-  { day: 'Mon', sales: 12500, orders: 45, conversion: 3.2 },
-  { day: 'Tue', sales: 15800, orders: 52, conversion: 3.8 },
-  { day: 'Wed', sales: 11200, orders: 38, conversion: 2.9 },
-  { day: 'Thu', sales: 18900, orders: 67, conversion: 4.1 },
-  { day: 'Fri', sales: 22400, orders: 78, conversion: 4.8 },
-  { day: 'Sat', sales: 28700, orders: 95, conversion: 5.2 },
-  { day: 'Sun', sales: 16300, orders: 58, conversion: 3.6 },
-];
-
-const topProducts = [
-  { name: 'iPhone 15 Pro', sales: 234, revenue: 233400, growth: 15.3 },
-  { name: 'MacBook Pro', sales: 89, revenue: 222500, growth: 8.7 },
-  { name: 'iPad Air', sales: 156, revenue: 93400, growth: -2.1 },
-  { name: 'Apple Watch', sales: 203, revenue: 81200, growth: 22.4 },
-  { name: 'AirPods Pro', sales: 345, revenue: 86250, growth: 18.9 },
-];
-
 export default function AnalyticsPage() {
+  const { t } = useTranslation();
   const [dateRange, setDateRange] = useState('30d');
 
+  const categoryData = [
+    { name: t('electronics'), nameKey: 'electronics', value: 45, revenue: 320000, color: '#3b82f6' },
+    { name: t('clothing'), nameKey: 'clothing', value: 25, revenue: 180000, color: '#0ea5e9' },
+    { name: t('home_garden'), nameKey: 'home_garden', value: 20, revenue: 140000, color: '#06b6d4' },
+    { name: t('books'), nameKey: 'books', value: 10, revenue: 70000, color: '#8b5cf6' },
+  ];
+
+  const dailyData = [
+    { day: t('mon'), dayKey: 'mon', sales: 12500, orders: 45, conversion: 3.2 },
+    { day: t('tue'), dayKey: 'tue', sales: 15800, orders: 52, conversion: 3.8 },
+    { day: t('wed'), dayKey: 'wed', sales: 11200, orders: 38, conversion: 2.9 },
+    { day: t('thu'), dayKey: 'thu', sales: 18900, orders: 67, conversion: 4.1 },
+    { day: t('fri'), dayKey: 'fri', sales: 22400, orders: 78, conversion: 4.8 },
+    { day: t('sat'), dayKey: 'sat', sales: 28700, orders: 95, conversion: 5.2 },
+    { day: t('sun'), dayKey: 'sun', sales: 16300, orders: 58, conversion: 3.6 },
+  ];
+
+  const topProducts = [
+    { name: 'iPhone 15 Pro', sales: 234, revenue: 233400, growth: 15.3 },
+    { name: 'MacBook Pro', sales: 89, revenue: 222500, growth: 8.7 },
+    { name: 'iPad Air', sales: 156, revenue: 93400, growth: -2.1 },
+    { name: 'Apple Watch', sales: 203, revenue: 81200, growth: 22.4 },
+    { name: 'AirPods Pro', sales: 345, revenue: 86250, growth: 18.9 },
+  ];
+
   const dateRanges = [
-    { value: '7d', label: 'Last 7 days' },
-    { value: '30d', label: 'Last 30 days' },
-    { value: '90d', label: 'Last 3 months' },
-    { value: 'year', label: 'This year' },
+    { value: '7d', label: t('last_days', { count: 7 }) },
+    { value: '30d', label: t('last_30_days', { count: 30 }) },
+    { value: '90d', label: t('last_months', { count: 3 }) },
+    { value: 'year', label: t('this_year') },
   ];
 
   const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0);
@@ -100,8 +102,8 @@ export default function AnalyticsPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-dark mb-2">Analytics & Reports</h1>
-          <p className="text-dark-70">Comprehensive insights into your store's performance and growth metrics.</p>
+          <h1 className="text-3xl font-bold text-dark mb-2">{t('analytics_reports')}</h1>
+          <p className="text-dark-70">{t('comprehensive_insights')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2">
@@ -119,10 +121,10 @@ export default function AnalyticsPage() {
             </select>
           </div>
           <GlassButton variant="secondary" icon={Filter}>
-            Filter
+            {t('filter')}
           </GlassButton>
           <GlassButton variant="secondary" icon={Download}>
-            Export Report
+            {t('export_report')}
           </GlassButton>
         </div>
       </motion.div>
@@ -135,35 +137,35 @@ export default function AnalyticsPage() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <StatCard
-          title="Total Revenue"
+          title={t('total_revenue')}
           value={`$${totalRevenue.toLocaleString()}`}
-          subtitle="this period"
+          subtitle={t('this_period')}
           icon={DollarSign}
-          trend={{ value: 12.5, label: 'vs last period', positive: true }}
+          trend={{ value: 12.5, label: t('vs_last_period'), positive: true }}
           gradient="success"
         />
         <StatCard
-          title="Total Orders"
+          title={t('total_orders')}
           value={totalOrders.toLocaleString()}
-          subtitle="orders"
+          subtitle={t('orders')}
           icon={ShoppingCart}
-          trend={{ value: 8.3, label: 'vs last period', positive: true }}
+          trend={{ value: 8.3, label: t('vs_last_period'), positive: true }}
           gradient="info"
         />
         <StatCard
-          title="Avg Order Value"
+          title={t('avg_order_value')}
           value={`$${avgOrderValue.toFixed(0)}`}
-          subtitle="per order"
+          subtitle={t('per_order')}
           icon={Target}
-          trend={{ value: 4.2, label: 'vs last period', positive: true }}
+          trend={{ value: 4.2, label: t('vs_last_period'), positive: true }}
           gradient="primary"
         />
         <StatCard
-          title="Profit Margin"
+          title={t('profit_margin')}
           value={`${((totalProfit / totalRevenue) * 100).toFixed(1)}%`}
-          subtitle="margin"
+          subtitle={t('margin')}
           icon={TrendingUp}
-          trend={{ value: -1.2, label: 'vs last period', positive: false }}
+          trend={{ value: -1.2, label: t('vs_last_period'), positive: false }}
           gradient="warning"
         />
       </motion.div>
@@ -177,8 +179,8 @@ export default function AnalyticsPage() {
           transition={{ delay: 0.2 }}
         >
           <ChartCard 
-            title="Revenue & Profit Trend"
-            action={{ label: 'View Details', onClick: () => console.log('View details') }}
+            title={t('revenue_profit')}
+            action={{ label: t('view_details'), onClick: () => console.log('View details') }}
             height="h-96"
           >
             <ResponsiveContainer width="100%" height="100%" minHeight={300}>
@@ -233,7 +235,7 @@ export default function AnalyticsPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <ChartCard title="Sales by Category" height="h-96">
+          <ChartCard title={t('sales_by_category')} height="h-96">
             <ChartWrapper>
               <ResponsiveContainer width="100%" height="100%" minHeight={350}>
                 <PieChart>
@@ -280,7 +282,7 @@ export default function AnalyticsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <ChartCard title="Daily Performance" height="h-80">
+        <ChartCard title={t('daily_performance')} height="h-80">
           <ResponsiveContainer width="100%" height="100%" minHeight={250}>
             <BarChart data={dailyData} margin={{ top: 5, right: 20, left: 10, bottom: 25 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -333,9 +335,9 @@ export default function AnalyticsPage() {
         >
           <GlassCard>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-dark">Top Performing Products</h3>
+              <h3 className="text-xl font-semibold text-dark">{t('top_performing_products')}</h3>
               <GlassButton variant="secondary" size="sm" icon={Eye}>
-                View All
+                {t('view_all')}
               </GlassButton>
             </div>
             <div className="space-y-4">
@@ -353,7 +355,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div>
                       <p className="text-dark font-medium">{product.name}</p>
-                      <p className="text-dark-60 text-sm">{product.sales} units sold</p>
+                      <p className="text-dark-60 text-sm">{product.sales} {t('units_sold')}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -382,32 +384,32 @@ export default function AnalyticsPage() {
           transition={{ delay: 0.6 }}
         >
           <GlassCard>
-            <h3 className="text-xl font-semibold text-dark mb-6">Performance Metrics</h3>
+            <h3 className="text-xl font-semibold text-dark mb-6">{t('performance_metrics')}</h3>
             <div className="space-y-6">
               {[
                 { 
-                  label: 'Conversion Rate', 
+                  label: t('conversion_rate'), 
                   value: '3.8%', 
                   change: '+0.4%', 
                   positive: true,
                   icon: Percent 
                 },
                 { 
-                  label: 'Customer Lifetime Value', 
+                  label: t('customer_lifetime_value'), 
                   value: '$1,245', 
                   change: '+$125', 
                   positive: true,
                   icon: Users 
                 },
                 { 
-                  label: 'Average Session Duration', 
+                  label: t('average_session_duration'), 
                   value: '4m 32s', 
                   change: '+45s', 
                   positive: true,
                   icon: Clock 
                 },
                 { 
-                  label: 'Cart Abandonment Rate', 
+                  label: t('cart_abandonment_rate'), 
                   value: '68.2%', 
                   change: '-2.1%', 
                   positive: true,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
   Bell,
@@ -14,6 +15,7 @@ import {
   Shield
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 interface HeaderProps {
   onSidebarToggle: () => void;
@@ -21,6 +23,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onSidebarToggle, title }: HeaderProps) {
+  const { t } = useTranslation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -28,36 +31,36 @@ export default function Header({ onSidebarToggle, title }: HeaderProps) {
   const notifications = [
     {
       id: 1,
-      title: 'Low Stock Alert',
-      message: 'iPhone 15 Pro stock is running low (5 items left)',
-      time: '5 minutes ago',
+      title: t('low_stock_alert'),
+      message: t('stock_running_low', { product: 'iPhone 15 Pro', count: 5 }),
+      time: t('minutes_ago', { count: 5 }),
       type: 'warning',
       unread: true,
     },
     {
       id: 2,
-      title: 'New Sale',
-      message: 'Customer purchased MacBook Pro for $2,499',
-      time: '15 minutes ago',
+      title: t('new_sale'),
+      message: t('customer_purchased', { product: 'MacBook Pro', amount: '$2,499' }),
+      time: t('minutes_ago', { count: 15 }),
       type: 'success',
       unread: true,
     },
     {
       id: 3,
-      title: 'Monthly Report',
-      message: 'Your monthly sales report is ready',
-      time: '1 hour ago',
+      title: t('monthly_report'),
+      message: t('monthly_report_ready'),
+      time: t('hour_ago', { count: 1 }),
       type: 'info',
       unread: false,
     },
   ];
 
   const profileMenuItems = [
-    { icon: User, label: 'Profile', action: () => console.log('Profile') },
-    { icon: Settings, label: 'Settings', action: () => console.log('Settings') },
-    { icon: HelpCircle, label: 'Help Center', action: () => console.log('Help') },
-    { icon: Shield, label: 'Privacy', action: () => console.log('Privacy') },
-    { icon: LogOut, label: 'Sign Out', action: () => console.log('Sign out') },
+    { icon: User, label: t('profile'), action: () => console.log('Profile') },
+    { icon: Settings, label: t('settings'), action: () => console.log('Settings') },
+    { icon: HelpCircle, label: t('help_center'), action: () => console.log('Help') },
+    { icon: Shield, label: t('privacy'), action: () => console.log('Privacy') },
+    { icon: LogOut, label: t('logout'), action: () => console.log('Sign out') },
   ];
 
   return (
@@ -88,7 +91,7 @@ export default function Header({ onSidebarToggle, title }: HeaderProps) {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
           <motion.input
             type="text"
-            placeholder="Search products, customers, transactions..."
+            placeholder={t('search_placeholder')}
             className={clsx(
               'w-full pl-10 pr-4 py-2 glass-panel rounded-xl text-slate-700 placeholder-slate-500 border-0 focus:outline-none transition-all duration-300',
               searchFocused
@@ -136,9 +139,9 @@ export default function Header({ onSidebarToggle, title }: HeaderProps) {
               className="absolute right-0 top-12 w-80 glass-panel rounded-xl p-4 z-50"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-800 font-semibold">Notifications</h3>
+                <h3 className="text-slate-800 font-semibold">{t('notifications')}</h3>
                 <button className="text-slate-600 hover:text-slate-800 text-sm">
-                  Mark all read
+                  {t('mark_all_read')}
                 </button>
               </div>
               
@@ -175,11 +178,14 @@ export default function Header({ onSidebarToggle, title }: HeaderProps) {
               </div>
               
               <button className="w-full mt-4 py-2 text-center text-slate-600 hover:text-slate-800 text-sm border-t border-slate-300/30 pt-4">
-                View all notifications
+                {t('view_all_notifications')}
               </button>
             </motion.div>
           )}
         </div>
+
+        {/* Language Switcher */}
+        <LanguageSwitcher />
 
         {/* Profile Dropdown */}
         <div className="relative">
